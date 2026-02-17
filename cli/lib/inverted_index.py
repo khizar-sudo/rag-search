@@ -4,7 +4,7 @@ from collections import Counter, defaultdict
 import pickle
 import os
 
-from lib.search_utils import tokenize_text
+from lib.search_utils import BM25_K1, tokenize_text
 from lib.search_utils import CACHE_PATH, load_movies
 
 
@@ -55,6 +55,11 @@ class InvertedIndex:
         total_docs = len(self.docmap)
 
         return math.log(((total_docs - doc_freq + 0.5) / (doc_freq + 0.5)) + 1)
+
+    def get_bm25_tf(self, doc_id: int, term: str, k1=BM25_K1):
+        tf = self.get_tf(doc_id, term)
+        bm25_saturation = (tf * (k1 + 1)) / (tf + k1)
+        return bm25_saturation
 
     def build(self):
         movies = load_movies()
