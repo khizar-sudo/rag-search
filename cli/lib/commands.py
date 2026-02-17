@@ -31,3 +31,9 @@ def build_command():
     inverted_index.save()
     docs = inverted_index.get_documents("merida")
     print(f"First document for token 'merida' = {docs[0]}")
+
+
+def tf_command(doc_id: int, term: str) -> int:
+    inverted_index = InvertedIndex()
+    inverted_index.load()
+    return inverted_index.get_tf(doc_id, term)
