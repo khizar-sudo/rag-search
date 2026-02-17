@@ -1,9 +1,7 @@
-import string
-
 from lib.inverted_index import InvertedIndex
-from lib.search_utils import has_matching_token, tokenize_text
+from lib.search_utils import tokenize_text
 
-from .search_utils import DEFAULT_SEARCH_LIMIT, load_movies
+from .search_utils import DEFAULT_SEARCH_LIMIT
 
 
 def search_command(query: str, limit: int = DEFAULT_SEARCH_LIMIT) -> list[dict]:
@@ -26,14 +24,20 @@ def search_command(query: str, limit: int = DEFAULT_SEARCH_LIMIT) -> list[dict]:
 
 
 def build_command():
+    print("Building inverted index...")
     inverted_index = InvertedIndex()
     inverted_index.build()
     inverted_index.save()
-    docs = inverted_index.get_documents("merida")
-    print(f"First document for token 'merida' = {docs[0]}")
+    print("Inverted index built successfully")
 
 
 def tf_command(doc_id: int, term: str) -> int:
     inverted_index = InvertedIndex()
     inverted_index.load()
     return inverted_index.get_tf(doc_id, term)
+
+
+def idf_command(term: str) -> float:
+    inverted_index = InvertedIndex()
+    inverted_index.load()
+    return inverted_index.get_idf(term)

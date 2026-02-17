@@ -1,5 +1,4 @@
-from typing import Any
-
+import math
 
 from collections import Counter, defaultdict
 import pickle
@@ -26,7 +25,10 @@ class InvertedIndex:
             self.index[word].add(doc_id)
 
     def get_documents(self, term: str) -> list[int]:
-        doc_ids = self.index.get(term, set())
+        tokens = tokenize_text(term)
+        if len(tokens) != 1:
+            raise ValueError("Term must be a single word")
+        doc_ids = self.index.get(tokens[0], set())
         return sorted(list[int](doc_ids))
 
     def get_tf(self, doc_id: int, term: str) -> int:
@@ -34,6 +36,12 @@ class InvertedIndex:
         if len(tokens) != 1:
             raise ValueError("Term must be a single word")
         return self.term_frequencies[doc_id][tokens[0]]
+
+    def get_idf(self, term: str) -> float:
+        tokens = tokenize_text(term)
+        if len(tokens) != 1:
+            raise ValueError("Term must be a single word")
+        return math.log(len(self.docmap) / (len(self.get_documents(tokens[0])) + 1))
 
     def build(self):
         movies = load_movies()
