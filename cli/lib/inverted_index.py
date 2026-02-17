@@ -43,6 +43,9 @@ class InvertedIndex:
             raise ValueError("Term must be a single word")
         return math.log(len(self.docmap) / (len(self.get_documents(tokens[0])) + 1))
 
+    def get_tf_idf(self, doc_id: int, term: str) -> float:
+        return self.get_tf(doc_id, term) * self.get_idf(term)
+
     def build(self):
         movies = load_movies()
         for movie in movies:

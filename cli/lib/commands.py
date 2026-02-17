@@ -41,3 +41,9 @@ def idf_command(term: str) -> float:
     inverted_index = InvertedIndex()
     inverted_index.load()
     return inverted_index.get_idf(term)
+
+
+def tf_idf_command(doc_id: int, term: str) -> float:
+    inverted_index = InvertedIndex()
+    inverted_index.load()
+    return inverted_index.get_tf_idf(doc_id, term)

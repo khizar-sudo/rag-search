@@ -1,7 +1,13 @@
 #!/usr/bin/env python3
 import argparse
 
-from lib.commands import build_command, idf_command, search_command, tf_command
+from lib.commands import (
+    build_command,
+    idf_command,
+    search_command,
+    tf_command,
+    tf_idf_command,
+)
 
 
 def main() -> None:
@@ -24,6 +30,13 @@ def main() -> None:
     )
     idf_parser.add_argument("term", type=str, help="Term")
 
+    tf_idf_parser = subparsers.add_parser(
+        "tfidf",
+        help="Get the term frequency-inverse document frequency of a term in a document",
+    )
+    tf_idf_parser.add_argument("doc_id", type=int, help="Document ID")
+    tf_idf_parser.add_argument("term", type=str, help="Term")
+
     args = parser.parse_args()
 
     match args.command:
@@ -40,6 +53,9 @@ def main() -> None:
         case "idf":
             idf = idf_command(args.term)
             print(f"IDF for {args.term} = {idf:.2f}")
+        case "tfidf":
+            tf_idf = tf_idf_command(args.doc_id, args.term)
+            print(f"TF-IDF for {args.term} in document {args.doc_id} = {tf_idf:.2f}")
         case _:
             parser.print_help()
 
