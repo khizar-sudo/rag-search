@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 import argparse
-from typing import Any
 
 from lib.search_utils import BM25_B, BM25_K1
-from lib.commands import (
+from lib.keyword_search_commands import (
     bm25_idf_command,
     bm25_tf_command,
     bm25search_command,
