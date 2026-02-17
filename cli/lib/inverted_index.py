@@ -4,7 +4,7 @@ from collections import Counter, defaultdict
 import pickle
 import os
 
-from lib.search_utils import BM25_B, BM25_K1, tokenize_text
+from lib.search_utils import BM25_B, BM25_K1, DEFAULT_SEARCH_LIMIT, tokenize_text
 from lib.search_utils import CACHE_PATH, load_movies
 
 
@@ -70,6 +70,25 @@ class InvertedIndex:
         tf = self.get_tf(doc_id, term)
         bm25_saturation = (tf * (k1 + 1)) / (tf + k1 * length_normalization)
         return bm25_saturation
+
+    def bm25(self, doc_id, term):
+        return self.get_bm25_idf(term) * self.get_bm25_tf(doc_id, term)
+
+    def bm25_search(
+        self, query, limit=DEFAULT_SEARCH_LIMIT
+    ) -> list[tuple[dict, float]]:
+        tokens = tokenize_text(query)
+        scores = defaultdict[int, float](float)
+        for token in tokens:
+            for doc_id in self.index[token]:
+                scores[doc_id] += self.bm25(doc_id, token)
+
+        # Return top N documents along with their BM25 scores
+        return sorted(
+            [(self.docmap[doc_id], score) for doc_id, score in scores.items()],
+            key=lambda x: x[1],
+            reverse=True,
+        )[:limit]
 
     def build(self):
         movies = load_movies()
