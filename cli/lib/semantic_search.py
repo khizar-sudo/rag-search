@@ -4,6 +4,8 @@ import numpy as np
 
 from lib.search_utils import (
     CACHE_PATH,
+    DEFAULT_CHUNK_OVERLAP,
+    DEFAULT_CHUNK_SIZE,
     DEFAULT_SEARCH_LIMIT,
     EMBEDDINGS_PATH,
     load_movies,
@@ -138,3 +140,27 @@ def search_command(query: str, limit: int = DEFAULT_SEARCH_LIMIT) -> list[dict]:
         print(
             f"{i}. {result['title']} (score: {result['score']:.2f})\n {result['description']}\n"
         )
+
+
+def fixed_size_chunking(
+    text: str,
+    chunk_size: int = DEFAULT_CHUNK_SIZE,
+    overlap: int = DEFAULT_CHUNK_OVERLAP,
+) -> list[str]:
+    words = text.split()
+    chunks = [
+        words[max(0, i - overlap) : i + chunk_size]
+        for i in range(0, len(words), chunk_size)
+    ]
+    return [" ".join(chunk) for chunk in chunks]
+
+
+def chunk_text(
+    text: str,
+    chunk_size: int = DEFAULT_CHUNK_SIZE,
+    overlap: int = DEFAULT_CHUNK_OVERLAP,
+):
+    chunks = fixed_size_chunking(text, chunk_size, overlap)
+    print(f"Chunking {len(text)} characters")
+    for i, chunk in enumerate(chunks, 1):
+        print(f"{i}. {chunk}")
